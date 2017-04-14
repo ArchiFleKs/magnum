@@ -186,6 +186,7 @@ resources:
             "$KUBE_API_PORT": {get_param: kubernetes_port}
             "$TLS_DISABLED": {get_param: tls_disabled}
             "$NETWORK_DRIVER": {get_param: network_driver}
+            "$FLANNEL_NETWORK_CIDR": {get_param: flannel_network_cidr}
             "$ETCD_SERVER_IP": {get_param: etcd_server_ip}
             "$KUBE_VERSION": {get_param: kube_version}
             "$CLUSTER_UUID": {get_param: cluster_uuid}
@@ -258,6 +259,12 @@ resources:
       group: ungrouped
       config: {get_file: fragments/configure-docker.yaml}
 
+  write_os_config:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: ungrouped
+      config: {get_file: fragments/write-os-config.yaml}
+
   kube_minion_init:
     type: OS::Heat::SoftwareConfig
     properties:
@@ -274,6 +281,7 @@ resources:
             $enable_kubelet
             $enable_kube_proxy
             $wc_notify
+            $write_os_config
             coreos:
               units:
                 - name: "make-cert.service"
@@ -281,6 +289,8 @@ resources:
                 - name: "configure-docker.service"
                   command: "start"
                 - name: "add-proxy.service"
+                  command: "start"
+                - name: "write-os-config.service"
                   command: "start"
                 - name: "enable-network-service.service"
                   command: "start"
@@ -300,6 +310,7 @@ resources:
             "$enable_kubelet": {get_attr: [enable_kubelet, config]}
             "$enable_kube_proxy": {get_attr: [enable_kube_proxy, config]}
             "$wc_notify": {get_attr: [wc_notify, config]}
+            "$write_os_config": {get_attr: [write_os_config, config]}
 
   # do NOT use "_" (underscore) in the Nova server name
   # it creates a mismatch between the generated Nova name and its hostname

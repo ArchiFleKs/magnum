@@ -83,6 +83,8 @@ write_files:
         --tls-private-key-file=${TLS_PRIVATE_KEY_FILE} \
         --cluster_dns=${DNS_SERVICE_IP} \
         --cluster_domain=${DNS_CLUSTER_DOMAIN} \
+        --cloud-config=/etc/kubernetes/openstack/kube_openstack_config \
+        --cloud-provider=openstack \
         ${INSECURE_REGISTRY_ARGS}
       Restart=always
       RestartSec=10

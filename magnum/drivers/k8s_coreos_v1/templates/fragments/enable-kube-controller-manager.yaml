@@ -51,6 +51,8 @@ write_files:
           - --leader-elect=true
           - --service-account-private-key-file=${SERVICE_ACCOUNT_PRIVATE_KEY_FILE}
           - --root-ca-file=${ROOT_CA_FILE}
+          - --cloud-config=/etc/kubernetes/openstack/kube_openstack_config
+          - --cloud-provider=openstack
           livenessProbe:
             httpGet:
               host: 127.0.0.1
@@ -61,6 +63,9 @@ write_files:
           volumeMounts:
           - mountPath: /etc/kubernetes/ssl
             name: ssl-certs-kubernetes
+            readOnly: true
+          - mountPath: /etc/kubernetes/openstack
+            name: kube-openstack-config
             readOnly: true
           - mountPath: /etc/ssl/certs
             name: ssl-certs-host
@@ -78,4 +83,7 @@ write_files:
         - hostPath:
             path: ${SYSCONFIG_PATH}
           name: sysconfig
+        - hostPath:
+            path: /etc/kubernetes/openstack
+          name: kube-openstack-config
       EOF

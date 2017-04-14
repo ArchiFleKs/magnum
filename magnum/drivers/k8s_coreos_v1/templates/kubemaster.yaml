@@ -396,6 +396,12 @@ resources:
       group: ungrouped
       config: {get_file: fragments/enable-coredns.yaml}
 
+  write_os_config:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: ungrouped
+      config: {get_file: fragments/write-os-config.yaml}
+
   kube_master_init:
     type: OS::Heat::SoftwareConfig
     properties:
@@ -419,6 +425,7 @@ resources:
             $enable_kube_dashboard
             $enable_coredns
             $wc_notify
+            $write_os_config
             coreos:
               units:
                 - name: "make-cert.service"
@@ -426,6 +433,8 @@ resources:
                 - name: "configure-docker.service"
                   command: "start"
                 - name: "add-proxy.service"
+                  command: "start"
+                - name: "write-os-config.service"
                   command: "start"
                 - name: "configure-etcd.service"
                   command: "start"
@@ -468,6 +477,7 @@ resources:
             "$enable_kube_dashboard": {get_attr: [enable_kube_dashboard, config]}
             "$enable_coredns": {get_attr: [enable_coredns, config]}
             "$wc_notify": {get_attr: [wc_notify, config]}
+            "$write_os_config": {get_attr: [write_os_config, config]}
 
   ######################################################################
   #

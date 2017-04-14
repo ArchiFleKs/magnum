@@ -66,6 +66,7 @@ write_files:
           - --tls-cert-file=${TLS_CERT_FILE}
           - --tls-private-key-file=${TLS_PRIVATE_KEY_FILE}
           - --client-ca-file=${CLIENT_CA_FILE}
+          - --kubelet-preferred-address-types=InternalIP,Hostname,ExternalIP
           - --service-account-key-file=${TLS_PRIVATE_KEY_FILE}
           ${KUBE_ADMISSION_CONTROL}
           ports:

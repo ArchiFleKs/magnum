@@ -1,0 +1,36 @@
+#cloud-config
+write_files:
+  - path: /etc/systemd/system/write-os-config.service
+    owner: "root:root"
+    permissions: "0644"
+    content: |
+      [Unit]
+      Description=Write OpenStack Config
+
+      [Service]
+      Type=oneshot
+      EnvironmentFile=/etc/sysconfig/heat-params
+      ExecStart=/etc/sysconfig/write-os-config.sh
+
+      [Install]
+      WantedBy=multi-user.target
+
+  - path: /etc/sysconfig/write-os-config.sh
+    owner: "root:root"
+    permissions: "0755"
+    content: |
+      #!/bin/sh
+      TEMPLATE=/etc/kubernetes/openstack/kube_openstack_config
+      mkdir -p $(dirname ${TEMPLATE})
+      cat > $TEMPLATE <<EOF
+      [Global]
+      auth-url=$AUTH_URL
+      user-id=$TRUSTEE_USER_ID
+      password=$TRUSTEE_PASSWORD
+      trust-id=$TRUST_ID
+      [LoadBalancer]
+      subnet-id=$CLUSTER_SUBNET
+      create-monitor=yes
+      monitor-delay=1m
+      monitor-timeout=30s
+      monitor-max-retries=3
